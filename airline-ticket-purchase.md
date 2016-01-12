@@ -1,5 +1,5 @@
 #### Code
-This is a set of code I created to simulate airline ticket purchases.
+This is a set of C++ code I created to simulate airline ticket purchases.
 
     #include <iostream>
     #include <string>
