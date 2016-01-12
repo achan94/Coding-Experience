@@ -1,6 +1,8 @@
-### This is a set of code I created to simulate airline ticket purchases
+### This is a set of code I created to simulate airline ticket purchase
 
- makeVector <- function(x = numeric()) {
+<!-- -->
+
+    makeVector <- function(x = numeric()) {
             m <- NULL
             set <- function(y) {
                     x <<- y
@@ -13,108 +15,3 @@
                  setmean = setmean,
                  getmean = getmean)
     }
-
-    #include <iostream>
-    #include <string>
-    #include <sstream>
-    using namespace std;
-
-    int main()
-    {
-     string airline, description, strMiles, strPrice;
-     double miles, price, average_cost, CostperMile, totalCostperMile, 
-     distMontereytoMonterey,ProjectedCostForMonterey;
-     cout << "Enter your airlines: ";
-     getline(cin, airline);
-     
-     cout << endl << "----------- Trip 1 ---------------" << endl;
-     cout << "Enter your flight description: ";
-     getline (cin, description);
-     cout << "Enter the price of the ticket: ";
-     getline (cin, strPrice);
-     cout << "Enter miles of the round-trip travel: ";
-     getline (cin, strMiles);
-     
-     istringstream (strPrice) >> price;
-     istringstream (strMiles) >> miles;
-     totalCostperMile = 0;
-    
-     if ((airline.length() >= 2) && (description.length() >= 4) && (miles >= 20) 
-     && (price >= 1))
-    {
-       cout << airline << endl << "flight : " << description << endl << 
-       "price : $" << strPrice << endl << "distance : " << strMiles << 
-       " miles" << endl;
-       CostperMile = price/miles;
-       totalCostperMile = totalCostperMile + CostperMile;
-    }
-    else
-    {
-       cout << "Something is wrong with the data of your flight!" <<endl;
-       return 1;
-    }
-
-    cout << endl <<"----------- Trip 2 ---------------" << endl;
-    cout << "Enter your flight description: ";
-    getline (cin, description);
-    cout << "Enter the price of the ticket: ";
-    getline (cin, strPrice);
-    cout << "Enter miles of the round-trip travel: ";
-    getline (cin, strMiles);
-   
-    istringstream (strPrice) >> price;
-    istringstream (strMiles) >> miles;
-   
-    if ((description.length() >= 4) && (miles >= 20) && (price >= 1))
-    {
-       cout << airline << endl << "flight : " << description << endl << 
-          "price : $" << strPrice << endl << "distance : " << strMiles << 
-          " miles" << endl;
-       CostperMile = price/miles;
-       totalCostperMile = totalCostperMile + CostperMile;
-    }
-    else
-    {
-       cout << "Something is wrong with the data of your flight!" << endl;
-       return 1;
-    }
-   
-    cout << endl << "----------- Trip 3 ---------------" << endl;
-    cout << "Enter your flight description: ";
-    getline (cin, description);
-    cout << "Enter the price of the ticket: ";
-    getline (cin, strPrice);
-    cout << "Enter miles of the round-trip travel: ";
-    getline (cin, strMiles);
-
-    istringstream (strPrice) >> price;
-    istringstream (strMiles) >> miles;
-      
-    if ((description.length() >= 4) && (miles >= 20) && (price >= 1))
-    {
-       cout << airline << endl << "flight : " << description << endl << 
-         "price : $" << strPrice << endl << "distance : " << strMiles << 
-         " miles" << endl;
-       CostperMile = price/miles;
-       totalCostperMile = totalCostperMile + CostperMile;
-   }
-   else
-   {
-       cout << "Something is wrong with the data of your flight!" <<endl;
-       return 1;
-   }
-
-   distMontereytoMonterey = 2958.98;
-   average_cost = totalCostperMile / 3;
-   ProjectedCostForMonterey = distMontereytoMonterey * average_cost;
-
-   cout << endl << "Average cost per mile based on those three trips: " 
-      << endl << average_cost << " $/mile" << endl;
-   cout << "Projected cost to go roundtrip between Monterey, CA, " 
-      << "and Monterrey, MEX is" << endl << "$" << ProjectedCostForMonterey 
-      << endl;
-
-   return 0;
- }
-```
- 
