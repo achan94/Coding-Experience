@@ -1,5 +1,5 @@
 #### Code
-This is a set of C++ code I created to simulate airline ticket purchases.
+This is a set of C++ code I created to compute projected cost to go roundtrip between Monterey, CA, and Monterrey, MEX.
 
     #include <iostream>
     #include <string>
