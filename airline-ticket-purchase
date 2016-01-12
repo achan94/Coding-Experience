@@ -1,6 +1,6 @@
 ### This is a set of code I created to simulate airline ticket purchases
 
-'''
+```
   #include <iostream>
   #include <string>
   #include <sstream>
@@ -103,5 +103,5 @@
 
    return 0;
  }
-'''
+```
  
