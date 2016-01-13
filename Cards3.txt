@@ -1,0 +1,327 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Node
+{ 
+public:
+   Node *next;
+
+   Node();
+   virtual ~Node();
+   virtual string toString();
+};
+
+class Queue
+{ 
+   Node *head, *tail;
+public:
+   Queue();
+   virtual ~Queue();
+   void add (Node *newNode);
+   Node *remove();
+   string toString();
+   class QueueEmptyException { };
+};
+
+// class Card prototype ----------------------------------------
+class Card
+{
+public:
+   enum Suit { clubs, diamonds, hearts, spades };
+   static char DEFAULT_VAL;
+   static Suit DEFAULT_SUIT;
+
+private:
+   char value;
+   Suit suit;
+   bool errorFlag;
+
+public:
+   Card(char value = DEFAULT_VAL, Suit suit = DEFAULT_SUIT);
+   string toString();
+   bool set(char value = DEFAULT_VAL, Suit suit = DEFAULT_SUIT);
+
+   char getVal() { return value; }
+   Suit getSuit() { return suit; }
+   bool getErrorFlag() { return errorFlag; }
+   bool equals(Card card);
+
+   // helpers
+private:
+   bool isValid(char value, Suit suit);
+};
+
+char Card::DEFAULT_VAL = 'A';
+Card::Suit Card::DEFAULT_SUIT = Card::spades;
+
+class CardNode : public Node
+{
+private:
+   Card data;
+public:
+   CardNode (Card cardData);
+   string toString();
+   Card getData();
+};
+
+class CardQueue : private Queue
+{
+public:
+   ~CardQueue();
+   void add(Card newCard);
+   Card remove();
+   string toString();
+};
+
+int main()
+{
+   Card card1('3', Card::clubs), card2, card3('T', Card::clubs),
+      card4('9', Card::hearts), card5, printCard;
+   CardQueue queue;
+
+   queue.add (card1);
+   queue.add (card2);
+   queue.add (card3);
+   queue.add (card4);
+   queue.add (card5);
+   cout << "Initial Queue : " << endl;
+   cout << queue.toString() << endl;
+
+   cout << "Removing...." << endl;
+   try
+   {
+      for (int x = 0; x <= 8; x++)
+      {
+         printCard = queue.remove();
+         cout << printCard.toString() << endl;
+      }
+   }
+   catch (Queue::QueueEmptyException)
+   {
+      cout << "Queue is empty" << endl;
+   }
+   return 0;
+}
+
+
+// Node method definitions --------------------------
+Node::Node()
+{
+   next = NULL;
+}
+Node::~Node()
+{
+   // nothing needed
+}
+string Node::toString()
+{
+   string print = "(generic node)";
+   return print;
+}
+// end Node method definitions ---------------------
+
+// Queue method definitions --------------------------
+Queue::Queue()
+{
+   head = NULL;
+   tail = NULL;
+}
+
+Queue::~Queue()
+{
+  
+}
+
+Node *Queue::remove()
+{
+   Node *temp;
+
+   temp = head;
+   if (head == NULL)
+      return temp;
+   else if (head == tail)
+   {
+      head = NULL;
+      tail = NULL;
+   }
+   else
+      head = head->next;      
+   temp->next = NULL; 
+   return temp;           
+}
+
+void Queue::add(Node  *newNode)
+{   
+   if (newNode == NULL) 
+      return; 
+   if (head == NULL)
+   {
+      head = newNode;
+      tail = newNode;
+   }
+   else
+   {
+      tail->next = newNode;
+      tail = newNode;
+   }
+}  
+
+string Queue::toString()
+{   
+   Node *p;
+   string printString = "";
+   for( p = head; p != NULL; p = p->next )
+      printString = printString + p->toString() + "\n";
+   return printString;
+}  
+
+// CardNode method definitions --------------------------
+CardNode::CardNode(Card cardData)
+{
+   data = cardData;
+}
+
+string CardNode::toString()
+{
+   return data.toString();
+}
+
+Card CardNode::getData()
+{
+   return data;  // simple accessor
+}
+// end CardNode method definitions ---------------------
+
+// CardQueue method definitions --------------------------
+void CardQueue::add(Card newCard)
+{
+   CardNode *newCardNode = new CardNode(newCard);
+   Queue::add(newCardNode);
+}
+
+Card CardQueue::remove()
+{
+   CardNode *cardNodeToBeRemoved = (CardNode *)Queue::remove();
+   Card cardToBeReturned;
+
+   if (cardNodeToBeRemoved == NULL)
+      throw QueueEmptyException();
+   cardToBeReturned = cardNodeToBeRemoved->getData();
+   delete cardNodeToBeRemoved;
+   return cardToBeReturned;
+}
+
+CardQueue::~CardQueue()
+{
+   Node *node;
+
+   while (node = Queue::remove())
+      delete node;
+}
+
+string CardQueue::toString()
+{
+   return Queue::toString();
+}
+// end CardQueue method definitions ---------------------
+
+// beginning of Card method definitions ---------------------------------------
+// constructor
+Card::Card(char value, Suit suit)
+{
+   // because mutator sets errorFlag, we don't have to test
+   set(value, suit);
+}
+
+// stringizer
+string Card::toString()
+{
+   string retVal = " ";  // just enough space for the value char
+
+   if (errorFlag)
+      return "** illegal **";
+
+   // convert char to a string
+   retVal[0] = value;
+
+   if (suit == spades)
+      retVal += " of Spades";
+   else if (suit == hearts)
+      retVal += " of Hearts";
+   else if (suit == diamonds)
+      retVal += " of Diamonds";
+   else if (suit == clubs)
+      retVal += " of Clubs";
+
+   return retVal;
+}
+
+// mutator
+bool Card::set(char value, Suit suit)
+{
+   char upVal;
+
+   // convert to uppercase to simplify (may need to #include <cctype>)
+   upVal = toupper((int)value);
+
+   if ( !isValid(upVal, suit))
+   {
+      errorFlag = true;
+      return false;
+   }
+
+   // else implied
+   errorFlag = false;
+   this->value = upVal;
+   this->suit = suit;
+   return true;
+}
+
+// helper
+bool Card::isValid(char value, Suit suit)
+{
+   string upVal = "_";  // string to hold the 1-char value
+   string legalVals = "23456789TJQKA";
+
+   // convert to uppercase to simplify
+   upVal[0] = toupper((int)value);
+
+   // check for validity
+   if ( legalVals.find(upVal) != string::npos )
+      return true;
+   else
+      return false;
+}
+
+bool Card::equals(Card card)
+{
+   if (this->value != card.value)
+      return false;
+   if (this->suit != card.suit)
+      return false;
+   if (this->errorFlag != card.errorFlag)
+      return false;
+   return true;
+}
+// end of Card method definitions ------------------------------------
+
+/*----- paste of run -----
+
+Initial Queue :
+3 of Clubs
+A of Spades
+T of Clubs
+9 of Hearts
+A of Spades
+
+Removing....
+3 of Clubs
+A of Spades
+T of Clubs
+9 of Hearts
+A of Spades
+Queue is empty
+Press any key to continue . . .
+
+--------------------------*/

@@ -1,0 +1,299 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <sstream>
+
+using namespace std;
+
+class Complex
+{
+friend Complex operator+ (const Complex& number1, const Complex& number2);
+friend Complex operator- (const Complex& number1, const Complex& number2);
+friend Complex operator* (const Complex& number1, const Complex& number2);
+friend Complex operator/ (const Complex& number1, const Complex& number2);
+friend ostream & operator<< (ostream& strm, Complex& number);
+
+private:
+   double real, imag;
+
+public:
+   static const double DEFAULT_VALUE;
+   static const double ZERO_VALUE;
+
+   Complex ( double real = DEFAULT_VALUE, double imag = DEFAULT_VALUE);
+   bool setReal (double real);
+   bool setImag (double imag);
+   double getReal ();
+   double getImag ();
+   double modulus() const;
+   Complex recriprocal() const;
+   string toString();
+
+   bool operator< (const Complex& number1);
+   bool operator==(const Complex& number1);
+   Complex & operator= (const Complex& number1);
+
+   class DivByZeroException { };
+};
+
+const double Complex::DEFAULT_VALUE = 0;
+const double Complex::ZERO_VALUE = 0.00000001;
+
+int  main()
+{
+   Complex testNumber;
+   Complex number1(1,2), number2(3,4);
+   double testDouble = 10;
+
+   cout << "Number 1 is " << number1 << " & Number 2 is " << number2 << endl;
+   cout << endl << "----- Operator Testing -----" << endl;
+   testNumber = number1 + number2;
+   cout << number1 << " + "  << number2 << " = " << testNumber << endl;
+
+   testNumber = number1 - number2;
+   cout << number1 << " - "  << number2 << " = " << testNumber << endl;
+
+   testNumber = number1 * number2;
+   cout << number1 << " * "  << number2 << " = " << testNumber << endl;
+
+   testNumber = number1 / number2;
+   cout << number1 << " / "  << number2 << " = " << testNumber << endl;
+
+   testNumber = number1 + testDouble;
+   cout << number1 << " + " << testDouble  << " = " << testNumber << endl;
+
+   testNumber = number1 - testDouble;
+   cout << number1 << " - "  << testDouble  << " = " << testNumber << endl;
+
+   testNumber = number1 * testDouble;
+   cout << number1 << " * " << testDouble  << " = " << testNumber << endl;
+
+   testNumber = testDouble / number2;
+   cout <<  testDouble << " / "  << number2 << " = " << testNumber << endl;
+
+   if (number2 < number1)
+      cout << endl << "Number 2 is less than number 1" << endl;
+   else
+      cout << endl << "Number 2 is not less than number 1" << endl;
+
+   if (number2 == number1)
+      cout << endl << "Number 2 is the same as number 1" << endl;
+   else
+      cout << endl << "Number 2 is different from number 1" << endl;
+
+   cout << endl << "If Number 1 = Number 2, we will get: " << endl;
+   number1 = number2;
+   cout << "Number 1 is " << number1 << endl;
+   cout << "Number 2 is " << number2 << endl;
+   
+   if (number2 == number1)
+      cout << endl << "Number 2 is the same as number 1" << endl;
+   else
+      cout << endl << "Number 2 is different from number 1" << endl;
+
+   cout << endl << "----- Exception Testing -----" << endl;
+   try
+   {
+      testNumber = number1 / testDouble;
+      cout << "If we divide " << number1 << " by " << testDouble 
+         << ", we get: " << endl << testNumber << endl << endl;
+      
+      testNumber.setReal (0.000000000000000000001);
+      testNumber.setImag (0.000000000000000000001);
+      cout << "If we divide " << number1 << " by " 
+         << testNumber << ", we get: " << endl;
+      testNumber = number1 / testNumber;
+   }
+   catch (Complex::DivByZeroException)
+   {
+      cout << "*** Likely div. by 0 exception ***" << endl;
+      testNumber = 0;
+   }
+
+   cout << endl << "----- Mutator Test -----" << endl;
+   number2.setImag(20);
+   cout << number2 << endl << endl;
+
+   cout << "----- Accesor Test -----" << endl;
+   number1.getReal();
+   cout << number1 << endl << endl;
+
+   return 0;
+}
+
+Complex::Complex (double real, double imag)
+{
+   setReal(real);
+   setImag(imag);
+}
+   
+bool Complex::setReal (double real)
+{
+   this->real = real;
+   return true;
+}
+   
+bool Complex::setImag (double imag)
+{
+   this->imag = imag;
+   return true;
+}
+   
+double Complex::getReal ()
+{
+   return real;
+}
+   
+double Complex::getImag ()
+{
+   return imag;
+}
+   
+double Complex::modulus() const
+{
+   double modulus, squareSum;
+   
+   squareSum = real*real + imag*imag;
+   modulus = sqrt(squareSum);
+   return modulus;
+}
+   
+Complex Complex::recriprocal() const
+{
+   double modulusSquare, realRecriprocal, imagReciprocal;
+   
+   modulusSquare = modulus()*modulus();
+   if(modulusSquare <= ZERO_VALUE)
+      throw DivByZeroException();
+   else
+   {
+      realRecriprocal = real/modulusSquare;
+      imagReciprocal = -1*imag/modulusSquare;
+      Complex recriprocal(realRecriprocal, imagReciprocal);
+      return recriprocal;
+   }
+}
+   
+string Complex::toString()
+{
+   string printString, realString, imagString;
+
+   ostringstream cnvrt1;
+   cnvrt1 << real;
+   realString = cnvrt1.str();
+
+   ostringstream cnvrt2;
+   cnvrt2 << imag;
+   imagString = cnvrt2.str();
+
+   if (real <= ZERO_VALUE && real >= -1*ZERO_VALUE)
+      realString = "0";
+   if (imag <= ZERO_VALUE && imag >= -1*ZERO_VALUE)
+      imagString = "0";
+   printString = "( " + realString + ", " + imagString + " )";
+   return printString;
+}
+
+bool Complex::operator< (const Complex& number1)
+{
+   if(modulus() < number1.modulus())
+      return true;
+   return false;
+}
+   
+bool Complex::operator== (const Complex& number1)
+{
+   if(real == number1.real && imag == number1.imag)
+      return true;
+   return false;
+}
+   
+Complex & Complex::operator= (const Complex& number1)
+{
+   if (this != &number1)
+   {
+      this->real = number1.real;
+      this->imag = number1.imag;
+   }
+   return *this;
+}
+
+Complex operator+ (const Complex& number1, const Complex& number2)
+{
+   Complex temp;
+
+   temp.real = number1.real + number2.real;
+   temp.imag = number1.imag + number2.imag;
+   return temp;
+}
+   
+Complex operator- (const Complex& number1, const Complex& number2)
+{
+   Complex temp;
+
+   temp.real = number1.real - number2.real;
+   temp.imag = number1.imag - number2.imag;
+   return temp;
+}
+   
+Complex operator* (const Complex& number1, const Complex& number2)
+{
+   Complex temp;
+
+   temp.real = number1.real * number2.real - number1.imag * number2.imag;
+   temp.imag = number1.real * number2.imag + number2.real * number1.imag;
+   return temp;
+}
+   
+Complex operator/ (const Complex& number1, const Complex& number2)
+{
+    Complex temp;
+    temp = number1 * number2.recriprocal ();
+    return temp;
+}
+
+ostream & operator<< (ostream& strm, Complex& number)
+{
+   strm << number.toString();
+   return strm;
+}
+
+/* -------- paste of run --------
+
+Number 1 is ( 1, 2 ) & Number 2 is ( 3, 4 )
+
+----- Operator Testing -----
+( 1, 2 ) + ( 3, 4 ) = ( 4, 6 )
+( 1, 2 ) - ( 3, 4 ) = ( -2, -2 )
+( 1, 2 ) * ( 3, 4 ) = ( -5, 10 )
+( 1, 2 ) / ( 3, 4 ) = ( 0.44, 0.08 )
+( 1, 2 ) + 10 = ( 11, 2 )
+( 1, 2 ) - 10 = ( -9, 2 )
+( 1, 2 ) * 10 = ( 10, 20 )
+10 / ( 3, 4 ) = ( 1.2, -1.6 )
+
+Number 2 is not less than number 1
+
+Number 2 is different from number 1
+
+If Number 1 = Number 2, we will get:
+Number 1 is ( 3, 4 )
+Number 2 is ( 3, 4 )
+
+Number 2 is the same as number 1
+
+----- Exception Testing -----
+If we divide ( 3, 4 ) by 10, we get:
+( 0.3, 0.4 )
+
+If we divide ( 3, 4 ) by ( 0, 0 ), we get:
+*** Likely div. by 0 exception ***
+
+----- Mutator Test -----
+( 3, 20 )
+
+----- Accesor Test -----
+( 3, 4 )
+
+Press any key to continue . . .
+---------------------------------*/

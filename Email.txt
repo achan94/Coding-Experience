@@ -1,0 +1,484 @@
+#include <iostream>
+#include <string>
+#include <cctype>
+
+using namespace std;
+
+class Message
+{
+private:
+   string message;
+   string author;
+   static bool isAuthorValid(string author);
+   static bool isMessageValid(string message);
+
+public:
+   static const int MIN_AUTHOR_LENGTH = 3;
+   static const int MAX_AUTHOR_LENGTH = 65;
+   static const int MIN_MESSAGE_LENGTH = 1;
+   static const int MAX_MESSAGE_LENGTH = 1000000;
+   static const string DEFAULT_MESSAGE;
+   static const string DEFAULT_AUTHOR;
+
+   Message();
+   Message (string message, string author);
+   bool setMessage(string message);
+   bool setAuthor(string author);
+   string getMessage();
+   string getAuthor();
+   string toString();
+};
+
+const string Message::DEFAULT_MESSAGE = "Blank";
+const string Message::DEFAULT_AUTHOR = "Nobody";
+
+class Email : public Message
+{
+private:
+   string fromAddress;
+   string toAddress;
+
+public:
+   static const int MAXIMUM_EMAIL_ADDRESS_LENGTH = 254;
+   static const int MINIMUM_EMAIL_ADDRESS_LENGTH = 8;
+   static const string DEFAULT_EMAIL_ADDRESS;
+
+   Email();
+   Email(string message, string author, string fromAddress, string toAddress);
+   bool setFromAddress(string fromAddress);
+   bool setToAddress(string toAddress);
+   string getFromAddress();
+   string getToAddress();
+   string toString();
+
+private:
+   bool isValidAddress (string address);
+};
+
+const string Email::DEFAULT_EMAIL_ADDRESS = "example@yahoo.com"; 
+
+class Shweet : public Message
+{
+public:
+   static const int MAX_SHWITTER_ID_LENGTH = 15;
+   static const int MAX_SHWEET_LENGTH = 140;
+   static const int MIN_SHWEET_LENGTH = 1;
+   static const string DEFAULT_USER_ID;
+
+private:
+   string fromID;
+   bool isValidShweet (string message);
+   bool isValidShwitterID (string fromID);
+   bool stringHasOnlyAlphaOrNumOrUnderscore(string fromID);
+
+public:
+   Shweet();
+   Shweet(string message, string author, string fromID);
+   bool setFromID(string fromID);
+   bool setMessage(string message);
+   string getFromID();
+   string toString();
+};
+
+const string Shweet::DEFAULT_USER_ID = "itsme"; 
+
+int main()
+{ 
+   cout << "---- Base Class Test ---- " << endl << endl;
+   Message person1, person2 ("Hello world!", "John Wang");
+   string printString;
+
+   person1.setAuthor("ME");
+   person2.setMessage("How are you world?");
+   printString = person1.toString();
+   cout << printString << endl << endl;
+   printString = person2.toString();
+   cout << printString << endl << endl;
+
+   cout << "---- Base Class Accessor Test ----" << endl;
+   printString = person1.getMessage();
+   cout << printString << endl;
+   printString = person2.getAuthor();
+   cout << printString << endl << endl;
+
+   cout << "---- Base Class Mutator Test ----" << endl;
+   if (person1.setMessage(""))
+      cout << "Acceptable message" << endl;
+   else
+      cout << "Illegal message" << endl;
+   printString = person1.toString();
+   cout << printString << endl << endl;
+   if (person2.setAuthor("Benjamin Franklin"))
+      cout << "Acceptable author name" << endl;
+   else
+      cout << "Illegal author namee" << endl;
+   printString = person2.toString();
+   cout << printString << endl << endl;
+
+   cout << endl << "----- Email Class Test ----" << endl;
+   Email email1, email2("This is a testing email", "Paul Brown", 
+      "brownpaul@gmail.com", "james@yahoo.com");
+
+   email1.setToAddress("you@gmail.com");
+   email2.setFromAddress("gmail");
+   printString = email1.toString();
+   cout << printString << endl << endl;
+   printString = email2.toString();
+   cout << printString << endl << endl;
+
+   cout << "---- Accessor Test ----" << endl;
+   printString = email1.getToAddress();
+   cout << printString << endl;
+   printString = email2.getFromAddress();
+   cout << printString << endl << endl;
+
+   cout << "---- Mutator Test ----" << endl;
+   if (email2.setFromAddress("test@yahoo"))
+      cout << "Acceptable email address" << endl;
+   else
+      cout << "Illegal email address" << endl;
+   printString = email2.toString();
+   cout << printString << endl << endl;
+   if (email1.setToAddress("young@hotmail.com"))
+      cout << "Acceptable email address" << endl;
+   else
+      cout << "Illegal email address" << endl;
+   printString = email1.toString();
+   cout << printString << endl << endl;
+
+   cout << endl << "---- Shweet Class Test ----" << endl;
+   Shweet shweet1, shweet2("This is a testing shweet", "Brad Pitt", "pitt");
+   
+   shweet1.setFromID("myShweet");
+   shweet2.setFromID("Hi!");
+   printString = shweet1.toString();
+   cout << printString << endl << endl;
+   printString = shweet2.toString();
+   cout << printString << endl << endl;
+
+   cout << "---- Accessor Test ----" << endl;
+   printString = shweet1.getFromID();
+   cout << printString << endl << endl;
+   printString = shweet2.getFromID();
+   cout << printString << endl << endl;
+
+   cout << "---- Mutator Test ----" << endl;
+   if (shweet2.setFromID("C++"))
+      cout << "Acceptable user name" << endl;
+   else
+      cout << "Illegal user name" << endl;
+   printString = shweet2.toString();
+   cout << printString << endl << endl;
+   if (shweet1.setFromID("me"))
+      cout << "Acceptable user name" << endl;
+   else
+      cout << "Illegal user name" << endl;
+   printString = shweet1.toString();
+   cout << printString << endl << endl;
+   
+   return 0;
+}
+
+Message::Message()
+{
+   setMessage(DEFAULT_MESSAGE);
+   setAuthor (DEFAULT_AUTHOR);
+}
+
+Message::Message (string message, string author)
+{
+   if(!setMessage(message))
+      this->message = DEFAULT_MESSAGE;
+   if (!setAuthor (author))
+      this->author = DEFAULT_AUTHOR;
+}
+
+bool Message::setMessage(string message)
+{
+   if (isMessageValid(message))
+   {
+      this->message = message;
+      return true;
+   }
+   return false;
+}
+
+bool Message::setAuthor(string author)
+{
+   if (isAuthorValid(author))
+   {
+      this->author = author;
+      return true;
+   }
+   return false;
+}
+
+string Message::getMessage()
+{
+   return message;
+}
+
+string Message::getAuthor()
+{
+   return author;
+}
+
+string Message::toString()
+{
+   string returnString;
+   returnString = "Author : " + author + "\n" + "Message ------\n" + message;
+   return returnString;
+}
+
+bool Message::isAuthorValid(string author)
+{
+   int authorLength;
+   authorLength = author.length();
+   if (authorLength >= MIN_AUTHOR_LENGTH && authorLength <= MAX_AUTHOR_LENGTH)
+      return true;
+   return false;
+}
+
+bool Message::isMessageValid(string message)
+{
+   int messageLength;
+   messageLength = message.length();
+   if (messageLength >= MIN_MESSAGE_LENGTH &&
+      messageLength <= MAX_MESSAGE_LENGTH)
+      return true;
+   return false;
+}
+
+Email::Email() : Message()
+{
+   setFromAddress(DEFAULT_EMAIL_ADDRESS);
+   setToAddress(DEFAULT_EMAIL_ADDRESS);
+}
+
+Email::Email(string message, string author, string fromAddress, 
+   string toAddress) : Message (message, author)
+{
+   if(!setFromAddress(fromAddress))
+      this->fromAddress = DEFAULT_EMAIL_ADDRESS;
+   if(!setToAddress(toAddress))
+      this->toAddress = DEFAULT_EMAIL_ADDRESS;
+}
+
+bool Email::setFromAddress(string fromAddress)
+{
+   if(isValidAddress(fromAddress))
+   {
+      this->fromAddress = fromAddress;
+      return true;
+   }
+   return false;
+}
+
+bool Email::setToAddress(string toAddress)
+{
+   if(isValidAddress(toAddress))
+   {
+      this->toAddress = toAddress;
+      return true;
+   }
+   return false;
+}
+
+string Email::getFromAddress()
+{
+   return fromAddress;
+}
+
+string Email::getToAddress()
+{
+   return toAddress;
+}
+
+string Email::toString()
+{
+   string returnString;
+   returnString = "From : " + fromAddress + "\nTo : " + toAddress + "\n" + 
+      Message::toString();
+   return returnString;
+}
+
+bool Email::isValidAddress (string address)
+{
+   int findAt, findDot;
+   findAt = address.find("@");
+   findDot = address.find(".");
+   if (address.length() >= MINIMUM_EMAIL_ADDRESS_LENGTH && 
+      address.length() <= MAXIMUM_EMAIL_ADDRESS_LENGTH 
+      && findAt != string::npos && findDot != string::npos)
+      return true;
+   return false;
+}
+
+Shweet::Shweet() : Message()
+{
+   fromID = DEFAULT_USER_ID;
+}
+
+Shweet::Shweet(string message, string author, string fromID) 
+   : Message (message, author)
+{
+   if(!setFromID(fromID))
+      this->fromID = DEFAULT_USER_ID;
+   if(!setMessage(message))
+      Message::setMessage(DEFAULT_MESSAGE);
+}
+
+bool Shweet::setFromID(string fromID)
+{
+   if(isValidShwitterID(fromID))
+   {
+      this->fromID = fromID;
+      return true;
+   }
+   return false;
+}
+
+bool Shweet::setMessage(string message)
+{
+   if (isValidShweet(message))
+   {
+      Message::setMessage(message);
+      return true;
+   }
+   return false;
+}
+
+string Shweet::getFromID()
+{
+   return fromID;
+}
+
+string Shweet::toString()
+{
+   string returnString;
+   returnString = "Shweet : " + getAuthor() + "  @" + getFromID() + "\n" 
+      + getMessage();
+   return returnString;
+}
+
+bool Shweet::isValidShweet (string message)
+{
+   int messageLength;
+   messageLength = message.length(); 
+   if (messageLength >= MIN_SHWEET_LENGTH && messageLength <= MAX_SHWEET_LENGTH
+      && messageLength <= MAX_MESSAGE_LENGTH 
+      && messageLength >= MIN_MESSAGE_LENGTH)
+   {
+      Message::setMessage(message);
+      return true;
+   }
+   return false;
+}
+
+bool Shweet::isValidShwitterID (string fromID)
+{
+   if(stringHasOnlyAlphaOrNumOrUnderscore(fromID))
+      return true;
+   return false;
+}
+
+bool Shweet::stringHasOnlyAlphaOrNumOrUnderscore(string fromID)
+{
+   int index, stringLength;
+   stringLength = fromID.length();
+   if(stringLength <= MAX_SHWITTER_ID_LENGTH)
+   {
+      for (index = 0; index < stringLength; index++)
+      {
+         if (isalnum(fromID[index]) == false && fromID[index] != '_')
+            return false;
+      }
+   }
+   return true;
+}
+
+/* ---------- Paste of Run ----------
+
+---- Base Class Test ----
+
+Author : Nobody
+Message ------
+Blank
+
+Author : John Wang
+Message ------
+How are you world?
+
+---- Base Class Accessor Test ----
+Blank
+John Wang
+
+---- Base Class Mutator Test ----
+Illegal message
+Author : Nobody
+Message ------
+Blank
+
+Acceptable author name
+Author : Benjamin Franklin
+Message ------
+How are you world?
+
+
+----- Email Class Test ----
+From : example@yahoo.com
+To : you@gmail.com
+Author : Nobody
+Message ------
+Blank
+
+From : brownpaul@gmail.com
+To : james@yahoo.com
+Author : Paul Brown
+Message ------
+This is a testing email
+
+---- Accessor Test ----
+you@gmail.com
+brownpaul@gmail.com
+
+---- Mutator Test ----
+Illegal email address
+From : brownpaul@gmail.com
+To : james@yahoo.com
+Author : Paul Brown
+Message ------
+This is a testing email
+
+Acceptable email address
+From : example@yahoo.com
+To : young@hotmail.com
+Author : Nobody
+Message ------
+Blank
+
+
+---- Shweet Class Test ----
+Shweet : Nobody  @myShweet
+Blank
+
+Shweet : Brad Pitt  @pitt
+This is a testing shweet
+
+---- Accessor Test ----
+myShweet
+
+pitt
+
+---- Mutator Test ----
+Illegal user name
+Shweet : Brad Pitt  @pitt
+This is a testing shweet
+
+Acceptable user name
+Shweet : Nobody  @me
+Blank
+
+Press any key to continue . . .
+
+-------------------------------------*/

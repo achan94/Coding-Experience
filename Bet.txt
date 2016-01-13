@@ -1,0 +1,326 @@
+#include <iostream>
+#include <string>
+#include <stdlib.h>
+#include <sstream>
+#include <time.h>
+
+using namespace std;
+
+class TripleString
+{
+private:
+   string string1, string2, string3;
+
+public:
+   static const int MAX_LEN = 20;
+   TripleString();
+   bool validString( string str );
+   bool SetString1 ( string str );
+   bool SetString2 ( string str );
+   bool SetString3 ( string str );
+   string GetString1 ()
+   {
+      return string1;
+   }
+   string GetString2 ()
+   {
+      return string2;
+   }
+   string GetString3 ()
+   {
+      return string3;
+   }
+};
+
+int getBet();
+TripleString pull();
+string randString();
+int getPayMultiplier (TripleString thePull);
+void display (TripleString thePull, int winnings );
+
+
+int main()
+{
+   srand (time(NULL)); 
+   const int MIN_BET = 0;
+   int winnings, bet;
+   TripleString thePull;
+   
+   do
+   {  
+      bet = getBet();
+      if (bet != MIN_BET)
+      {
+         thePull = pull();
+         winnings = getPayMultiplier (thePull) * bet;
+         display (thePull, winnings );
+      }
+      else
+      {
+         break;
+      }
+   }
+   while (bet != MIN_BET);
+   return 0;
+}
+
+int getBet()
+{
+   const int MIN_BET = 0;
+   const int MAX_BET = 100;
+   bool check_bet;
+   string strBet;
+   int bet;
+   
+   check_bet = false;
+   while (check_bet == false)
+   {
+      cout << "Type your bet (1-100 or 0 to quit): ";
+      getline (cin, strBet);
+      istringstream (strBet) >> bet;
+      if ((bet > MIN_BET) && (bet < MAX_BET))
+      {
+         check_bet = true;
+      }
+      else if (bet == MIN_BET)
+         break;
+   }
+   return bet;
+}
+
+string randString()
+{
+   const string BAR = "BAR";
+   const string CHERRIES = "cherries";
+   const string SPACE = "space";
+   const string NUMBER_SEVEN = "7";
+   const int LIMIT_FOR_BAR = 500;
+   const int LIMIT_FOR_CHERRIES = 750;
+   const int LIMIT_FOR_SPACE = 875;
+   string theString;
+   int x;
+
+   x = rand() % 1000 + 1;;
+   if (x <= LIMIT_FOR_BAR)
+      theString = BAR;
+   else if (x <= LIMIT_FOR_CHERRIES)
+      theString = CHERRIES;
+   else if (x <= LIMIT_FOR_SPACE)
+      theString = SPACE;
+   else
+      theString = NUMBER_SEVEN;
+   return theString;
+}
+
+TripleString pull()
+{
+   TripleString pullString;
+   pullString.SetString1 (randString());
+   pullString.SetString2 (randString());
+   pullString.SetString3 (randString());
+   return pullString;
+}
+
+int getPayMultiplier (TripleString thePull)
+{
+   const string BAR = "BAR";
+   const string CHERRIES = "cherries";
+   const string SPACE = "space";
+   const string NUMBER_SEVEN = "7";
+   const int MULTIPLIER_CHERRIES_NOT_CHERRIES_ANY = 5;
+   const int MULTIPLIER_CHERRIES_CHERRIES_NOT_CHERRIES = 15;
+   const int MULTIPLIER_CHERRIES_CHERRIES_CHERRIES = 30;
+   const int MULTIPLIER_BAR_BAR_BAR = 50;
+   const int MULTIPLIER_7_7_7 = 100;
+   const int MULTIPLIER_OTHER = 0;
+   int multiplier;
+
+   if ((thePull.GetString1() == CHERRIES) && 
+      (thePull.GetString2() != CHERRIES))
+      multiplier = MULTIPLIER_CHERRIES_NOT_CHERRIES_ANY;
+   else if ((thePull.GetString1() == CHERRIES) && 
+      (thePull.GetString2() == CHERRIES) && (thePull.GetString3() != CHERRIES))
+      multiplier = MULTIPLIER_CHERRIES_CHERRIES_NOT_CHERRIES;
+   else if ((thePull.GetString1() == CHERRIES) && 
+      (thePull.GetString2() == CHERRIES) && (thePull.GetString3() == CHERRIES))
+      multiplier = MULTIPLIER_CHERRIES_CHERRIES_CHERRIES;
+   else if ((thePull.GetString1() == BAR) && (thePull.GetString2() == BAR) && 
+      (thePull.GetString3() == BAR))
+      multiplier = MULTIPLIER_BAR_BAR_BAR;
+   else if ((thePull.GetString1() == NUMBER_SEVEN) && 
+      (thePull.GetString2() == NUMBER_SEVEN) && 
+      (thePull.GetString3() == NUMBER_SEVEN))
+      multiplier = MULTIPLIER_7_7_7;
+   else
+      multiplier = MULTIPLIER_OTHER;
+   return multiplier;
+}
+
+void display (TripleString thePull, int winnings )
+{
+   const int WINNINGS_IF_LOST = 0;
+
+   cout << "Your pull is " << thePull.GetString1() << " " 
+      << thePull.GetString2() << " " << thePull.GetString3() << endl;
+   if (winnings == WINNINGS_IF_LOST)
+      cout << "sorry - you lost " << endl << endl;
+   else
+      cout << "congrats, you won $" << winnings << endl << endl;
+}
+
+TripleString::TripleString()
+{
+   string1 = string2 = string3 = "";
+
+}
+
+bool TripleString::validString( string str )
+{
+   if (str.length() <= MAX_LEN)
+     return true;
+   else
+   {
+      return false;
+   }
+}
+
+bool TripleString::SetString1 (string str)
+{
+   if (validString(str) == true)
+   {
+      string1 = str;
+      return true;
+   }
+   return false;
+}
+
+bool TripleString::SetString2 (string str)
+{
+   if (validString(str) == true)
+   {
+      string2 = str;
+      return true;
+   }
+   return false;
+}
+
+bool TripleString::SetString3 (string str)
+{
+   if (validString(str) == true)
+   {
+      string3 = str;
+      return true;
+   }
+   return false;
+}
+
+
+/* ------------- Pasted run -------------- 
+
+Type your bet (1-100 or 0 to quit): 25
+Your pull is 7 BAR BAR
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 10
+Your pull is cherries BAR 7
+congrats, you won $50
+
+Type your bet (1-100 or 0 to quit): 34
+Your pull is BAR BAR 7
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 46
+Your pull is cherries BAR BAR
+congrats, you won $230
+
+Type your bet (1-100 or 0 to quit): 11
+Your pull is cherries cherries BAR
+congrats, you won $165
+
+Type your bet (1-100 or 0 to quit): 16
+Your pull is BAR cherries BAR
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 21
+Your pull is BAR BAR cherries
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): -1
+Type your bet (1-100 or 0 to quit): 105
+Type your bet (1-100 or 0 to quit): 59
+Your pull is BAR BAR BAR
+congrats, you won $2950
+
+Type your bet (1-100 or 0 to quit): 90
+Your pull is space cherries 7
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 99
+Your pull is BAR space BAR
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 39
+Your pull is cherries cherries space
+congrats, you won $585
+
+Type your bet (1-100 or 0 to quit): 88
+Your pull is BAR 7 BAR
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 52
+Your pull is BAR BAR cherries
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 81
+Your pull is BAR space BAR
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 68
+Your pull is BAR 7 7
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 29
+Your pull is BAR cherries cherries
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 12
+Your pull is cherries BAR cherries
+congrats, you won $60
+
+Type your bet (1-100 or 0 to quit): 69
+Your pull is 7 BAR BAR
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 8
+Your pull is space BAR 7
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 9
+Your pull is BAR BAR BAR
+congrats, you won $450
+
+Type your bet (1-100 or 0 to quit): 120
+Type your bet (1-100 or 0 to quit): 48
+Your pull is space BAR 7
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 33
+Your pull is space BAR BAR
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 22
+Your pull is 7 BAR cherries
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 94
+Your pull is BAR BAR space
+sorry - you lost
+
+Type your bet (1-100 or 0 to quit): 96
+Your pull is cherries BAR 7
+congrats, you won $480
+
+Type your bet (1-100 or 0 to quit): 0
+Press any key to continue . . .
+
+------------------------------------------ */

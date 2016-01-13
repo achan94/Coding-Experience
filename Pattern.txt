@@ -1,0 +1,599 @@
+#include <iostream>
+#include <cmath>
+#include <string>
+
+using namespace std;
+
+class Automaton
+{
+private:
+   bool rules[8];
+   string thisGen;
+   string extremeBit;
+   int displayWidth;
+
+public:
+   static const int MAX_DISPLAY_WIDTH = 121;
+   static const int DEFAULT_DISPLAYWIDTH = 79;
+   static const int DEFAULT_RULE = 0;
+   static const string ASTERISK;
+   static const string BLANK;
+
+   Automaton(int rule);
+   string toStringCurrentGen();
+   bool setRule(int newRule);
+   void resetFirstGen();
+   bool setDisplayWidth(int width);
+   void propagateNewGeneration();
+};
+
+const string Automaton::ASTERISK = "*";
+const string Automaton::BLANK = " ";
+
+int main()
+{
+   int rule, generation;
+
+   do
+   {
+      cout << "Enter Rule (0 - 255): ";
+      cin >> rule;
+   } 
+   while (rule < 0 || rule > 255);
+
+   Automaton aut(rule);
+
+   cout << "   start"  << endl;
+   for (generation = 0; generation < 100; generation++)
+   {
+      cout << aut.toStringCurrentGen() << endl;
+      aut.propagateNewGeneration();
+   }
+   cout << "   end"  << endl;
+   return 0;
+}
+
+Automaton::Automaton(int rule)
+{
+   if(!setRule(rule))
+      setRule(DEFAULT_RULE);
+   setDisplayWidth (DEFAULT_DISPLAYWIDTH);
+   resetFirstGen();
+}
+
+string Automaton::toStringCurrentGen()
+{
+   int position, strLength, middle;
+   string returnString;
+
+   strLength = thisGen.length();
+   middle = (displayWidth + 1)/2;
+   returnString = "";
+   if (strLength < displayWidth)
+   {
+      for (position = 1; position < middle - (strLength - 1)/2 ; position++)
+         returnString = returnString + extremeBit;
+
+      returnString = returnString + thisGen;
+
+      for (position = 1; position < middle - (strLength - 1)/2 ; position++)
+         returnString = returnString + extremeBit;
+   }
+   else if (strLength > displayWidth)
+   {
+      returnString = thisGen.substr((strLength + 1) / 2 - middle, 
+         displayWidth);
+   }
+   else
+      returnString = thisGen;
+   return returnString;
+}
+
+bool Automaton::setRule(int newRule)
+{
+   int ruleIndex;
+   
+   if (newRule >= 0 || newRule <= 255)
+   {
+      for (ruleIndex = 7; ruleIndex >= 0 ; ruleIndex--)
+      {
+         if ( newRule >= pow (2, ruleIndex))
+         {
+            newRule = newRule - pow (2, ruleIndex);
+            rules[ruleIndex] = true;
+         }
+         else
+            rules[ruleIndex] = false;
+      }  
+      return true;
+   }
+   return false;
+}
+
+void Automaton::resetFirstGen()
+{
+   thisGen = ASTERISK;
+   extremeBit = BLANK;
+}
+
+bool Automaton::setDisplayWidth(int width)
+{
+   if(width > 0 && width <= MAX_DISPLAY_WIDTH && width%2 != 0)
+   {
+      displayWidth = width;
+      return true;
+   }
+   displayWidth = DEFAULT_DISPLAYWIDTH;
+   return false;
+}
+
+void Automaton::propagateNewGeneration()
+{
+   int index, thisGenLength, numRule;
+   string nextGen, checkExtremeBit;
+   
+   nextGen = "";
+   thisGen = extremeBit + extremeBit + thisGen + extremeBit + extremeBit;
+   thisGenLength = thisGen.length();
+   for (index = 0; index < thisGenLength - 2; index++)
+   {
+      numRule = 0;
+      if(thisGen[index] == '*')
+         numRule = numRule + 4;
+      if(thisGen[index+1] == '*')
+         numRule = numRule + 2;
+      if(thisGen[index+2] == '*')
+         numRule = numRule + 1;
+      
+      if (rules[numRule] == true)
+         nextGen = nextGen + ASTERISK;
+      else
+         nextGen = nextGen + BLANK;
+   }
+   thisGen = nextGen;
+   
+   checkExtremeBit = extremeBit + extremeBit + extremeBit;
+   numRule = 0;
+   if(checkExtremeBit[0] == '*')
+      numRule = numRule + 4;
+   if(checkExtremeBit[1] == '*')
+      numRule = numRule + 2;
+   if(checkExtremeBit[2] == '*')
+      numRule = numRule + 1;
+   if (rules[numRule] == true)
+      extremeBit = ASTERISK;
+   else
+      extremeBit = BLANK;
+}
+
+/* ------------- Pasted run - Rule 4 ---------------- 
+
+Enter Rule (0 - 255): 4
+   start
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+                                       *
+   end
+Press any key to continue . . .
+------------------------------------------ */
+
+/* ------------- Pasted run - Rule 126 -------------- 
+
+Enter Rule (0 - 255): 126
+   start
+                                       *
+                                      ***
+                                     ** **
+                                    *******
+                                   **     **
+                                  ****   ****
+                                 **  ** **  **
+                                ***************
+                               **             **
+                              ****           ****
+                             **  **         **  **
+                            ********       ********
+                           **      **     **      **
+                          ****    ****   ****    ****
+                         **  **  **  ** **  **  **  **
+                        *******************************
+                       **                             **
+                      ****                           ****
+                     **  **                         **  **
+                    ********                       ********
+                   **      **                     **      **
+                  ****    ****                   ****    ****
+                 **  **  **  **                 **  **  **  **
+                ****************               ****************
+               **              **             **              **
+              ****            ****           ****            ****
+             **  **          **  **         **  **          **  **
+            ********        ********       ********        ********
+           **      **      **      **     **      **      **      **
+          ****    ****    ****    ****   ****    ****    ****    ****
+         **  **  **  **  **  **  **  ** **  **  **  **  **  **  **  **
+        ***************************************************************
+       **                                                             **
+      ****                                                           ****
+     **  **                                                         **  **
+    ********                                                       ********
+   **      **                                                     **      **
+  ****    ****                                                   ****    ****
+ **  **  **  **                                                 **  **  **  **
+****************                                               ****************
+*              **                                             **              *
+**            ****                                           ****            **
+ **          **  **                                         **  **          **
+****        ********                                       ********        ****
+   **      **      **                                     **      **      **
+  ****    ****    ****                                   ****    ****    ****
+ **  **  **  **  **  **                                 **  **  **  **  **  **
+************************                               ************************
+                       **                             **
+                      ****                           ****
+                     **  **                         **  **
+                    ********                       ********
+                   **      **                     **      **
+                  ****    ****                   ****    ****
+                 **  **  **  **                 **  **  **  **
+                ****************               ****************
+*              **              **             **              **              *
+**            ****            ****           ****            ****            **
+ **          **  **          **  **         **  **          **  **          **
+****        ********        ********       ********        ********        ****
+   **      **      **      **      **     **      **      **      **      **
+  ****    ****    ****    ****    ****   ****    ****    ****    ****    ****
+ **  **  **  **  **  **  **  **  **  ** **  **  **  **  **  **  **  **  **  **
+*******************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*                                                                             *
+**                                                                           **
+ **                                                                         **
+****                                                                       ****
+   **                                                                     **
+  ****                                                                   ****
+ **  **                                                                 **  **
+********                                                               ********
+       **                                                             **
+      ****                                                           ****
+     **  **                                                         **  **
+    ********                                                       ********
+   end
+Press any key to continue . . .
+------------------------------------------ */
+
+/* ------------- Pasted run - Rule 130 -------------- 
+
+Enter Rule (0 - 255): 130
+   start
+                                       *
+                                      *
+                                     *
+                                    *
+                                   *
+                                  *
+                                 *
+                                *
+                               *
+                              *
+                             *
+                            *
+                           *
+                          *
+                         *
+                        *
+                       *
+                      *
+                     *
+                    *
+                   *
+                  *
+                 *
+                *
+               *
+              *
+             *
+            *
+           *
+          *
+         *
+        *
+       *
+      *
+     *
+    *
+   *
+  *
+ *
+*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   end
+Press any key to continue . . .
+------------------------------------------ */
+
+/* ------------- Pasted run - Rule 102 --------------- 
+
+Enter Rule (0 - 255): 102
+   start
+                                       *
+                                      **
+                                     * *
+                                    ****
+                                   *   *
+                                  **  **
+                                 * * * *
+                                ********
+                               *       *
+                              **      **
+                             * *     * *
+                            ****    ****
+                           *   *   *   *
+                          **  **  **  **
+                         * * * * * * * *
+                        ****************
+                       *               *
+                      **              **
+                     * *             * *
+                    ****            ****
+                   *   *           *   *
+                  **  **          **  **
+                 * * * *         * * * *
+                ********        ********
+               *       *       *       *
+              **      **      **      **
+             * *     * *     * *     * *
+            ****    ****    ****    ****
+           *   *   *   *   *   *   *   *
+          **  **  **  **  **  **  **  **
+         * * * * * * * * * * * * * * * *
+        ********************************
+       *                               *
+      **                              **
+     * *                             * *
+    ****                            ****
+   *   *                           *   *
+  **  **                          **  **
+ * * * *                         * * * *
+********                        ********
+       *                       *       *
+      **                      **      **
+     * *                     * *     * *
+    ****                    ****    ****
+   *   *                   *   *   *   *
+  **  **                  **  **  **  **
+ * * * *                 * * * * * * * *
+********                ****************
+       *               *               *
+      **              **              **
+     * *             * *             * *
+    ****            ****            ****
+   *   *           *   *           *   *
+  **  **          **  **          **  **
+ * * * *         * * * *         * * * *
+********        ********        ********
+       *       *       *       *       *
+      **      **      **      **      **
+     * *     * *     * *     * *     * *
+    ****    ****    ****    ****    ****
+   *   *   *   *   *   *   *   *   *   *
+  **  **  **  **  **  **  **  **  **  **
+ * * * * * * * * * * * * * * * * * * * *
+****************************************
+                                       *
+                                      **
+                                     * *
+                                    ****
+                                   *   *
+                                  **  **
+                                 * * * *
+                                ********
+                               *       *
+                              **      **
+                             * *     * *
+                            ****    ****
+                           *   *   *   *
+                          **  **  **  **
+                         * * * * * * * *
+                        ****************
+                       *               *
+                      **              **
+                     * *             * *
+                    ****            ****
+                   *   *           *   *
+                  **  **          **  **
+                 * * * *         * * * *
+                ********        ********
+               *       *       *       *
+              **      **      **      **
+             * *     * *     * *     * *
+            ****    ****    ****    ****
+           *   *   *   *   *   *   *   *
+          **  **  **  **  **  **  **  **
+         * * * * * * * * * * * * * * * *
+        ********************************
+       *                               *
+      **                              **
+     * *                             * *
+    ****                            ****
+   end
+Press any key to continue . . .
+------------------------------------------ */

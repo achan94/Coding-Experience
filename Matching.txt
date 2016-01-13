@@ -1,0 +1,276 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class DateProfile
+{
+private:
+   char gender, searchgender;
+   int romance, finance;
+   string name;
+   double determineGenderfit(DateProfile partner);
+   double determineRomanceFit(DateProfile partner);
+   double determineFinanceFit(DateProfile partner);
+
+public:
+   static const char MALE;
+   static const char FEMALE;
+   static const int MIN_INT;
+   static const int MAX_INT;
+   static const string DEFAULT_NAME;
+   static const int MIN_NAME_LENGTH;
+   static const int MAX_NAME_LENGTH;
+   static const double MAX_DIFFERENCE;
+   static const double MIN_DIFFERENCE;
+   static const double MIN_VALUE;
+   static const double MAX_VALUE;
+
+   DateProfile();
+   DateProfile (char Gender, char SearchGender, int Romance, int Finance, string Name);
+   bool SetGender (char Gender);
+   bool SetSearchGender (char SearchGender);
+   bool SetRomance (int Romance);
+   bool SetFinance (int Finance);
+   bool SetName (string Name);
+   char GetGender()
+   {
+      return gender;
+   }
+   char GetSearchGender()
+   {
+      return searchgender;
+   }
+   int GetRomance()
+   {
+      return romance;
+   }
+   int GetFinance()
+   {
+      return finance;
+   }
+   string GetName()
+   {
+      return name;
+   }
+   double fitValue (DateProfile partner);
+};
+
+const char DateProfile::MALE = 'M';
+const char DateProfile::FEMALE = 'F';
+const int DateProfile::MIN_INT = 1;
+const int DateProfile::MAX_INT = 10;
+const string DateProfile::DEFAULT_NAME = "unknown";
+const int DateProfile::MIN_NAME_LENGTH = 1;
+const int DateProfile::MAX_NAME_LENGTH = 80;
+const double DateProfile::MAX_DIFFERENCE = 9;
+const double DateProfile::MIN_DIFFERENCE = 0;
+const double DateProfile::MIN_VALUE = 0.0;
+const double DateProfile::MAX_VALUE = 1.0;
+
+int main()
+{
+   DateProfile applicant1, applicant2;
+   DateProfile applicant3('M','F',6,3,"John Smith");
+   DateProfile applicant4('F','M',5,4,"Evelyn Bush");
+
+   applicant1.SetGender('M');
+   applicant1.SetSearchGender('F');
+   applicant1.SetFinance(3);
+   applicant1.SetRomance(9);
+   applicant1.SetName("David Tan");
+   cout << "Fit result for " << applicant1.GetName() << endl;
+   cout << "  " << applicant1.GetName() << "  " << 
+      applicant1.fitValue (applicant1) << endl;
+   cout << "  " << applicant2.GetName() << "  " << 
+      applicant1.fitValue (applicant2) << endl;
+   cout << "  " << applicant3.GetName() << "  " << 
+      applicant1.fitValue (applicant3) << endl;
+   cout << "  " << applicant4.GetName() << "  " << 
+      applicant1.fitValue (applicant4) << endl;
+
+   cout << endl << "Fit result for " << applicant2.GetName() << endl;
+   cout << "  " << applicant1.GetName() << "  " << 
+      applicant2.fitValue (applicant1) << endl;
+   cout << "  " << applicant2.GetName() << "  " << 
+      applicant2.fitValue (applicant2) << endl;
+   cout << "  " << applicant3.GetName() << "  " << 
+      applicant2.fitValue (applicant3) << endl;
+   cout << "  " << applicant4.GetName() << "  " << 
+      applicant2.fitValue (applicant4) << endl;
+
+   cout << endl << "Fit result for " << applicant3.GetName() << endl;
+   cout << "  " << applicant1.GetName() << "  " << 
+      applicant3.fitValue (applicant1) << endl;
+   cout << "  " << applicant2.GetName() << "  " << 
+      applicant3.fitValue (applicant2) << endl;
+   cout << "  " << applicant3.GetName() << "  " << 
+      applicant3.fitValue (applicant3) << endl;
+   cout << "  " << applicant4.GetName() << "  " << 
+      applicant3.fitValue (applicant4) << endl;
+
+   cout << endl << "Fit result for " << applicant4.GetName() << endl;
+   cout << "  " << applicant1.GetName() << "  " << 
+      applicant4.fitValue (applicant1) << endl;
+   cout << "  " << applicant2.GetName() << "  " << 
+      applicant4.fitValue (applicant2) << endl;
+   cout << "  " << applicant3.GetName() << "  " << 
+      applicant4.fitValue (applicant3) << endl;
+   cout << "  " << applicant4.GetName() << "  " << 
+      applicant4.fitValue (applicant4) << endl;
+
+   return 0;
+}
+
+DateProfile::DateProfile()
+{
+   SetGender(MALE);
+   SetSearchGender(FEMALE);
+   SetRomance(MIN_INT);
+   SetFinance(MIN_INT);
+   SetName (DEFAULT_NAME);
+}
+
+DateProfile::DateProfile(char Gender, char SearchGender, int Romance,
+   int Finance, string Name)
+{
+   if (SetGender(Gender) == false)
+      SetGender(MALE);
+   if (SetSearchGender(SearchGender) == false)
+      SetSearchGender(FEMALE);
+   if (SetRomance(Romance) == false)
+      SetRomance(MIN_INT);
+   if (SetFinance(Finance) == false)
+      SetFinance(MIN_INT);
+   if (SetName(Name) == false)
+      SetName (DEFAULT_NAME);
+}
+
+bool DateProfile::SetGender (char Gender)
+{
+   if ((toupper(Gender) == MALE)||(toupper(Gender) == FEMALE))
+   {
+      gender = Gender;
+      return true;
+   }
+   return false;
+}
+
+bool DateProfile::SetSearchGender (char SearchGender)
+{
+   if ((toupper(SearchGender) == MALE)||(toupper(SearchGender) == FEMALE))
+   {
+      searchgender = SearchGender;
+      return true;
+   }
+   return false;
+}
+
+bool DateProfile::SetRomance (int Romance)
+{
+   if ((Romance >= MIN_INT) && (Romance <= MAX_INT))
+   {
+      romance = Romance;
+      return true;
+   }
+   return false;
+}
+
+bool DateProfile::SetFinance (int Finance)
+{
+   if ((Finance >= MIN_INT) && (Finance <= MAX_INT))
+   {
+      finance = Finance;
+      return true;
+   }
+   return false;
+}
+
+bool DateProfile::SetName (string Name)
+{
+   if ((Name.length() >= MIN_NAME_LENGTH) && 
+      (Name.length() <= MAX_NAME_LENGTH))
+   {
+      name = Name;
+      return true;
+   }
+   return false;
+}
+
+double DateProfile::determineGenderfit(DateProfile partner)
+{
+   double genderfit;
+   if((toupper(this->gender) == toupper(partner.searchgender)) && 
+      (toupper(this->searchgender) == toupper(partner.gender)))
+      genderfit = MAX_VALUE;
+   else
+      genderfit = MIN_VALUE;
+   return genderfit;
+}
+
+double DateProfile::determineRomanceFit(DateProfile partner)
+{
+   double difference, romancefit;
+   difference = abs(this->romance - partner.romance);
+   if( difference == MIN_DIFFERENCE)
+      romancefit = MAX_VALUE;
+   else if (difference == MAX_DIFFERENCE)
+      romancefit = MIN_VALUE + 0.1;
+   else
+      romancefit = MAX_VALUE - 
+         difference/(MAX_DIFFERENCE-MIN_DIFFERENCE)*(MAX_VALUE - (MIN_VALUE + 0.1));
+   return romancefit;
+}
+
+double DateProfile::determineFinanceFit(DateProfile partner)
+{
+   double difference;
+   double financefit;
+   difference = abs(this->finance - partner.finance);
+   if(difference == MIN_DIFFERENCE)
+      financefit = MAX_VALUE;
+   else if (difference == MAX_DIFFERENCE)
+      financefit = MIN_VALUE + 0.1;
+   else
+      financefit = MAX_VALUE - 
+         difference/(MAX_DIFFERENCE - MIN_DIFFERENCE)*(MAX_VALUE - (MIN_VALUE + 0.1));
+   return financefit;
+}
+
+double DateProfile::fitValue (DateProfile partner)
+{
+   double final_value;
+   double financefit, romancefit, genderfit;
+   financefit = determineFinanceFit(partner);
+   romancefit = determineRomanceFit(partner);
+   genderfit = determineGenderfit(partner);
+   final_value = financefit*romancefit*genderfit;
+   return final_value;
+}
+
+/* ------------- Pasted run -------------- 
+Fit result for David Tan
+  David Tan  0
+  unknown  0
+  John Smith  0
+  Evelyn Bush  0.54
+
+Fit result for unknown
+  David Tan  0
+  unknown  0
+  John Smith  0
+  Evelyn Bush  0.42
+
+Fit result for John Smith
+  David Tan  0
+  unknown  0
+  John Smith  0
+  Evelyn Bush  0.81
+
+Fit result for Evelyn Bush
+  David Tan  0.54
+  unknown  0.42
+  John Smith  0.81
+  Evelyn Bush  0
+Press any key to continue . . .
+------------------------------------------ */

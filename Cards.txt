@@ -1,0 +1,514 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cctype>
+#include <stdlib.h>
+
+using namespace std;
+
+class Card
+{
+public:
+   enum Suit { clubs, diamonds, hearts, spades };
+private:
+   char value;
+   Suit suit;
+   bool errorFlag;
+   static bool isValid (char value, Suit suit);
+public:
+   static const char DEFAULT_VALUE ='A';
+   static const Suit DEFAULT_SUIT = spades;
+   Card(char value = DEFAULT_VALUE, Suit suit = DEFAULT_SUIT);
+   bool set(char value, Suit suit);
+   string toString();
+   char getValue();
+   Suit getSuit();
+   bool getErrorFlag();
+   bool equals (Card card);
+};
+
+class Deck
+{
+public:
+   static const int MAX_NUMPACKS = 6;
+   static const int MIN_NUMPACKS = 0;
+   static const int CARDS_PER_PACK = 52;
+   static const int MAX_CARDS = MAX_NUMPACKS*CARDS_PER_PACK;
+   static const int DEFAULT_NUMPACK = 1;
+private:
+   Card cards[MAX_CARDS];
+   int topCard;
+   int numPacks;
+   static Card masterPack[CARDS_PER_PACK];
+   static void allocateMasterPack();
+public:
+   Deck (int numPacks = DEFAULT_NUMPACK);
+   void init(int numPacks = DEFAULT_NUMPACK);
+   void shuffle ();
+   Card dealCard();
+   int getTopCard();
+   Card inspectCard (int k);
+};
+
+class Hand
+{
+public:
+   static const int MAX_CARD = 30;
+   static const int DEFAULT_NUMCARDS = 0;
+   Hand();
+   void resetHand();
+   bool takeCard(Card card);
+   Card playCard();
+   string toString();
+   int getNumCards();
+   Card inspectCard(int k);
+private:
+   Card myCards[MAX_CARD];
+   int numCards;
+};
+
+Card Deck::masterPack[52];
+
+int main()
+{
+   //Test for Class Deck
+   Deck deck1(2);
+   Deck deck2(1);
+   cout << "If we use 2 packs of cards and deal them, we will get:" << endl;
+   while (deck1.getTopCard() > 0)
+   {
+      cout << deck1.dealCard().toString() << " / ";
+   }
+   cout << endl << endl;
+
+   deck1 = Deck(2);
+   deck1.shuffle();
+   cout << "If we use 2 packs of cards, shuffle, and deal them, we will get:" 
+      << endl;
+   while (deck1.getTopCard() > 0)
+   {
+      cout << deck1.dealCard().toString() << " / ";
+   }
+   cout << endl << endl;
+
+   cout << "If we use 1 pack of cards and deal them, we will get:" << endl;
+   while (deck2.getTopCard() > 0)
+   {
+      cout << deck2.dealCard().toString() << " / "; 
+   }
+   cout << endl << endl;
+
+   deck2 = Deck(1);
+   deck2.shuffle();
+   cout << "If we use 1 pack of cards, shuffle, and deal them, we will get:" 
+      << endl;
+   while (deck2.getTopCard() > 0)
+   {
+      cout << deck2.dealCard().toString() << " / "; 
+   }
+   cout << endl << endl;
+
+   //phase 2
+   static const int MAX_HAND = 10;
+   int totalHand, arrayIndex;
+   Hand player[MAX_HAND];
+   Deck deck3(1);
+   do
+   {
+      cout << "Enter the number of player: (1-10 players only) ";
+      cin >> totalHand;
+   } 
+   while (totalHand < 1 || totalHand > 10);
+
+   while (deck3.getTopCard() > 0)
+   {
+      for (arrayIndex = 0; arrayIndex <= totalHand - 1; arrayIndex++)
+      {
+         player[arrayIndex].takeCard(deck3.dealCard());
+         if (deck3.getTopCard() == 0)
+            break;
+      }
+   }
+   cout << "Here are our hands from unshuffled cards: " << endl;
+   for (arrayIndex = 0; arrayIndex <= totalHand - 1 ; arrayIndex++)
+      cout << player[arrayIndex].toString() << endl << endl;
+
+   deck3 = Deck(1);
+   deck3.shuffle();
+   for (arrayIndex = 0; arrayIndex <= totalHand - 1 ; arrayIndex++)
+      player[arrayIndex].resetHand();
+
+   while (deck3.getTopCard() > 0)
+   {
+      for (arrayIndex = 0; arrayIndex <= totalHand - 1; arrayIndex++)
+      {
+         player[arrayIndex].takeCard(deck3.dealCard());
+         if (deck3.getTopCard() == 0)
+            break;
+      }
+   }
+   cout << "Here are our hands from shuffled cards: " << endl;
+   for (arrayIndex = 0; arrayIndex <= totalHand - 1 ; arrayIndex++)
+      cout << player[arrayIndex].toString() << endl << endl;
+   return 0;
+}
+
+Card::Card(char value, Suit suit)
+{
+   set(value, suit);
+}
+
+bool Card::set(char value, Card::Suit suit)
+{
+   if (!isValid(value,suit))
+   {
+      this->errorFlag = true;
+      return false;
+   }
+   else
+   {
+      this->value = toupper((int)value);
+      this->suit = suit;
+      this->errorFlag = false;
+      return true;
+   }
+}
+
+string Card::toString()
+{
+   char cStringValue[2];
+   string stringValue;
+   cStringValue[0] = value;
+   cStringValue[1] = '\0';
+   if (errorFlag == false)
+   {
+      stringValue = string(cStringValue);
+      if (suit == spades)
+         stringValue = stringValue + " of Spades";
+      else if (suit == hearts)
+         stringValue = stringValue + " of Hearts";
+      else if (suit == diamonds)
+         stringValue = stringValue + " of Diamonds";
+      else if (suit == clubs)
+         stringValue = stringValue + " of Clubs";
+   }
+   else
+   {
+      stringValue = "[illegal]";
+   }
+   return stringValue;
+}
+
+Card::Suit Card::getSuit()
+{
+   return suit;
+}
+
+char Card::getValue()
+{
+   return value;
+}
+
+bool Card::getErrorFlag()
+{
+   return errorFlag;
+}
+
+bool Card::isValid (char value, Suit suit)
+{
+   char upperValue;
+   upperValue = toupper((int)value);
+   if (upperValue == 'A' || upperValue == 'K'
+      || upperValue == 'Q' || upperValue == 'J'
+      || upperValue == 'T'
+      || (upperValue >= '2' && upperValue <= '9')
+      )
+   {
+      return true;
+   }
+   else
+      return false;
+}
+
+bool Card::equals (Card card)
+{
+   if(this->value == card.value && this->suit == card.suit && 
+      this->errorFlag == card.errorFlag)
+   {
+      return true;
+   }
+   return false;
+}
+
+Deck::Deck (int numPacks)
+{
+   allocateMasterPack();
+   init(numPacks);
+}
+
+void Deck::init(int numPacks)
+{
+   int cardIndex, loop;
+   topCard = 0;
+   if(numPacks > MIN_NUMPACKS && numPacks <= MAX_NUMPACKS)
+   {
+      for ( loop = 0; loop < numPacks; loop++)
+      {
+         for (cardIndex = 0; cardIndex < CARDS_PER_PACK; cardIndex++)
+         {
+            cards [topCard] = masterPack[cardIndex];
+            topCard++;
+         }
+      }
+   }
+   else
+   {
+      init(DEFAULT_NUMPACK);
+   }
+}
+
+void Deck::shuffle ()
+{
+   int cardIndex, shufflingVariable;
+   Card temporaryCard;
+   for (cardIndex = 0; cardIndex < topCard; cardIndex++)
+   {
+      shufflingVariable = rand() % 5;
+      temporaryCard = cards[cardIndex];
+      cards[cardIndex]= cards[shufflingVariable];
+      cards[shufflingVariable] = temporaryCard;
+   }
+}
+
+Card Deck::dealCard()
+{
+   Card dealCard;
+   Card badCard ('0', Card::spades);
+   if(topCard > 0)
+   {
+      dealCard = cards[topCard-1];
+      topCard--;
+      return dealCard;
+   }
+   else
+   {
+      return badCard;
+   }
+}
+
+int Deck::getTopCard()
+{
+   return topCard;
+}
+
+Card Deck::inspectCard (int k)
+{
+   if(k < 0 || k >= topCard)
+   {
+      Card badCard ('0', Card::clubs);
+      return badCard;
+   }
+   else
+   {
+      return cards[k];
+   }
+}
+
+void Deck::allocateMasterPack()
+{
+   Card::Suit suit;
+   int k, j;
+   char  value;
+   static bool test_bool = false;
+   if(test_bool == false)
+   {
+      for (k = 0; k < 4; k++)
+      {
+         suit = static_cast<Card::Suit>(k);
+         masterPack[13*k].set('A', suit);
+         for (value = '2', j = 1; value <= '9'; value++, j++)
+            masterPack[13*k + j].set(value, suit);
+         masterPack[13*k+9].set('T', suit);
+         masterPack[13*k+10].set('J', suit);
+         masterPack[13*k+11].set('Q', suit);
+         masterPack[13*k+12].set('K', suit);
+      }
+      test_bool = true;
+      return;
+   }
+}
+
+Hand::Hand()
+{
+   resetHand();  
+}
+
+void Hand::resetHand()
+{
+   numCards = DEFAULT_NUMCARDS;
+}
+
+bool Hand::takeCard(Card card)
+{
+   if(numCards < MAX_CARD && card.getErrorFlag() == false)
+   {
+      myCards[numCards]= card;
+      numCards++;
+      return true;
+   }
+   return false;
+}
+
+Card Hand::playCard()
+{
+   Card playCard;
+   Card badCard ('0',Card::clubs);
+   if (numCards > DEFAULT_NUMCARDS)
+   {
+      playCard = myCards[numCards-1];
+      numCards--;
+      return playCard;
+   }
+   else
+      return badCard;
+}
+
+string Hand::toString()
+{
+   int indexCard;
+   string entireCards;
+   entireCards = " ";
+   if (numCards > DEFAULT_NUMCARDS && numCards <= MAX_CARD)
+   {
+      for (indexCard = 0; indexCard <= numCards-1; indexCard++)
+      {
+         entireCards = entireCards + myCards[indexCard].toString();
+         if (indexCard <= numCards - 2)
+            entireCards = entireCards + ",";
+      }
+   }
+   entireCards = "Hand - (" + entireCards + ")";
+   return entireCards;
+}
+
+int Hand::getNumCards()
+{
+   return numCards;
+}
+
+Card Hand::inspectCard(int k)
+{
+   if(k < 0 || k >= numCards)
+   {
+      Card badCard ('0',Card::clubs);
+      return badCard;
+   }
+   else
+   {
+      return myCards[k];
+   }
+}
+
+/* ------------------------------ paste of run --------------------------------
+
+If we use 2 packs of cards and deal them, we will get:
+K of Spades / Q of Spades / J of Spades / T of Spades / 9 of Spades / 8 of Spade
+s / 7 of Spades / 6 of Spades / 5 of Spades / 4 of Spades / 3 of Spades / 2 of S
+pades / A of Spades / K of Hearts / Q of Hearts / J of Hearts / T of Hearts / 9
+of Hearts / 8 of Hearts / 7 of Hearts / 6 of Hearts / 5 of Hearts / 4 of Hearts
+/ 3 of Hearts / 2 of Hearts / A of Hearts / K of Diamonds / Q of Diamonds / J of
+ Diamonds / T of Diamonds / 9 of Diamonds / 8 of Diamonds / 7 of Diamonds / 6 of
+ Diamonds / 5 of Diamonds / 4 of Diamonds / 3 of Diamonds / 2 of Diamonds / A of
+ Diamonds / K of Clubs / Q of Clubs / J of Clubs / T of Clubs / 9 of Clubs / 8 o
+f Clubs / 7 of Clubs / 6 of Clubs / 5 of Clubs / 4 of Clubs / 3 of Clubs / 2 of
+Clubs / A of Clubs / K of Spades / Q of Spades / J of Spades / T of Spades / 9 o
+f Spades / 8 of Spades / 7 of Spades / 6 of Spades / 5 of Spades / 4 of Spades /
+ 3 of Spades / 2 of Spades / A of Spades / K of Hearts / Q of Hearts / J of Hear
+ts / T of Hearts / 9 of Hearts / 8 of Hearts / 7 of Hearts / 6 of Hearts / 5 of
+Hearts / 4 of Hearts / 3 of Hearts / 2 of Hearts / A of Hearts / K of Diamonds /
+ Q of Diamonds / J of Diamonds / T of Diamonds / 9 of Diamonds / 8 of Diamonds /
+ 7 of Diamonds / 6 of Diamonds / 5 of Diamonds / 4 of Diamonds / 3 of Diamonds /
+ 2 of Diamonds / A of Diamonds / K of Clubs / Q of Clubs / J of Clubs / T of Clu
+bs / 9 of Clubs / 8 of Clubs / 7 of Clubs / 6 of Clubs / 5 of Clubs / 4 of Clubs
+ / 3 of Clubs / 2 of Clubs / A of Clubs /
+
+If we use 2 packs of cards, shuffle, and deal them, we will get:
+T of Spades / 8 of Spades / 8 of Hearts / 6 of Spades / 2 of Spades / A of Spade
+s / 4 of Spades / 5 of Spades / 3 of Spades / 3 of Diamonds / Q of Hearts / J of
+ Hearts / K of Hearts / 6 of Hearts / 4 of Hearts / T of Hearts / 9 of Hearts /
+7 of Hearts / J of Diamonds / K of Diamonds / 5 of Hearts / 3 of Hearts / 2 of H
+earts / 9 of Diamonds / A of Hearts / 5 of Diamonds / Q of Diamonds / 6 of Diamo
+nds / T of Diamonds / 8 of Diamonds / 4 of Diamonds / 7 of Diamonds / 2 of Diamo
+nds / A of Diamonds / K of Clubs / 7 of Clubs / Q of Clubs / J of Clubs / 9 of C
+lubs / 8 of Clubs / 3 of Clubs / T of Clubs / K of Hearts / 6 of Clubs / 5 of Cl
+ubs / 4 of Clubs / 9 of Spades / J of Spades / K of Spades / 2 of Clubs / A of C
+lubs / Q of Spades / 7 of Spades / 4 of Spades / T of Spades / 6 of Spades / 8 o
+f Spades / 3 of Spades / A of Spades / 5 of Spades / 2 of Spades / J of Hearts /
+ 7 of Hearts / 8 of Hearts / Q of Hearts / 4 of Hearts / 9 of Hearts / T of Hear
+ts / 5 of Hearts / 9 of Diamonds / 3 of Hearts / 6 of Hearts / 2 of Hearts / K o
+f Diamonds / 4 of Diamonds / J of Diamonds / A of Hearts / 8 of Diamonds / Q of
+Diamonds / T of Diamonds / 8 of Clubs / 6 of Diamonds / T of Clubs / 7 of Diamon
+ds / 3 of Diamonds / 5 of Diamonds / A of Diamonds / Q of Clubs / 2 of Diamonds
+/ K of Clubs / 9 of Clubs / 3 of Clubs / J of Clubs / 4 of Clubs / 6 of Clubs /
+5 of Clubs / 7 of Clubs / 2 of Clubs / A of Clubs / Q of Spades / K of Spades /
+7 of Spades / 9 of Spades / J of Spades /
+
+If we use 1 pack of cards and deal them, we will get:
+K of Spades / Q of Spades / J of Spades / T of Spades / 9 of Spades / 8 of Spade
+s / 7 of Spades / 6 of Spades / 5 of Spades / 4 of Spades / 3 of Spades / 2 of S
+pades / A of Spades / K of Hearts / Q of Hearts / J of Hearts / T of Hearts / 9
+of Hearts / 8 of Hearts / 7 of Hearts / 6 of Hearts / 5 of Hearts / 4 of Hearts
+/ 3 of Hearts / 2 of Hearts / A of Hearts / K of Diamonds / Q of Diamonds / J of
+ Diamonds / T of Diamonds / 9 of Diamonds / 8 of Diamonds / 7 of Diamonds / 6 of
+ Diamonds / 5 of Diamonds / 4 of Diamonds / 3 of Diamonds / 2 of Diamonds / A of
+ Diamonds / K of Clubs / Q of Clubs / J of Clubs / T of Clubs / 9 of Clubs / 8 o
+f Clubs / 7 of Clubs / 6 of Clubs / 5 of Clubs / 4 of Clubs / 3 of Clubs / 2 of
+Clubs / A of Clubs /
+
+If we use 1 pack of cards, shuffle, and deal them, we will get:
+Q of Spades / 7 of Spades / 2 of Spades / 9 of Spades / 6 of Spades / Q of Heart
+s / 5 of Spades / 8 of Hearts / A of Spades / 3 of Spades / 4 of Hearts / 6 of H
+earts / K of Hearts / A of Diamonds / J of Hearts / T of Hearts / 9 of Hearts /
+7 of Hearts / 5 of Hearts / K of Diamonds / 2 of Hearts / 3 of Hearts / J of Dia
+monds / Q of Diamonds / A of Hearts / T of Diamonds / 9 of Diamonds / 7 of Diamo
+nds / Q of Clubs / 8 of Diamonds / 3 of Diamonds / 5 of Diamonds / 6 of Diamonds
+ / 4 of Diamonds / J of Clubs / 7 of Clubs / 2 of Diamonds / K of Clubs / A of C
+lubs / T of Clubs / 9 of Clubs / 8 of Clubs / 3 of Clubs / 5 of Clubs / 2 of Clu
+bs / 6 of Clubs / 4 of Clubs / 4 of Spades / K of Spades / 8 of Spades / T of Sp
+ades / J of Spades /
+
+Enter the number of player: (1-10 players only) 5
+Here are our hands from unshuffled cards:
+Hand - ( K of Spades,8 of Spades,3 of Spades,J of Hearts,6 of Hearts,A of Hearts
+,9 of Diamonds,4 of Diamonds,Q of Clubs,7 of Clubs,2 of Clubs)
+
+Hand - ( Q of Spades,7 of Spades,2 of Spades,T of Hearts,5 of Hearts,K of Diamon
+ds,8 of Diamonds,3 of Diamonds,J of Clubs,6 of Clubs,A of Clubs)
+
+Hand - ( J of Spades,6 of Spades,A of Spades,9 of Hearts,4 of Hearts,Q of Diamon
+ds,7 of Diamonds,2 of Diamonds,T of Clubs,5 of Clubs)
+
+Hand - ( T of Spades,5 of Spades,K of Hearts,8 of Hearts,3 of Hearts,J of Diamon
+ds,6 of Diamonds,A of Diamonds,9 of Clubs,4 of Clubs)
+
+Hand - ( 9 of Spades,4 of Spades,Q of Hearts,7 of Hearts,2 of Hearts,T of Diamon
+ds,5 of Diamonds,K of Clubs,8 of Clubs,3 of Clubs)
+
+Here are our hands from shuffled cards:
+Hand - ( 9 of Spades,2 of Spades,K of Hearts,T of Hearts,4 of Hearts,T of Diamon
+ds,4 of Diamonds,7 of Clubs,2 of Clubs,6 of Clubs,K of Spades)
+
+Hand - ( J of Spades,A of Spades,5 of Hearts,9 of Hearts,5 of Diamonds,J of Diam
+onds,T of Clubs,2 of Diamonds,5 of Clubs,4 of Clubs,T of Spades)
+
+Hand - ( 6 of Spades,5 of Spades,Q of Diamonds,6 of Hearts,3 of Hearts,7 of Diam
+onds,6 of Diamonds,Q of Clubs,9 of Clubs,Q of Spades)
+
+Hand - ( 8 of Spades,2 of Hearts,8 of Hearts,7 of Hearts,A of Hearts,9 of Diamon
+ds,3 of Diamonds,J of Clubs,A of Clubs,4 of Spades)
+
+Hand - ( 7 of Spades,Q of Hearts,J of Hearts,K of Clubs,K of Diamonds,8 of Diamo
+nds,A of Diamonds,8 of Clubs,3 of Clubs,3 of Spades)
+
+Press any key to continue . . .
+-----------------------------------------------------------------------------*/

@@ -1,0 +1,220 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+class iTunes
+{
+private:
+   string name;
+   string artist;
+   int bitrate;
+   int totalTime;
+
+public:
+   static const int MIN_BITRATE;
+   static const int MAX_BITRATE;
+   static const int MIN_STR_LENGTH;
+   static const int MAX_STR_LENGTH;
+   static const int MIN_PLAY_TIME;
+   static const int MAX_PLAY_TIME;
+   static const int DEFAULT_BITRATE;
+   static const int DEFAULT_PLAY_TIME;
+   static const string DEFAULT_STRING;
+
+   iTunes();
+   iTunes(string initial_name, string initial_artist, int initial_bit_rate, 
+      int initial_total_time);
+   bool SetName (string inputted_name);
+   string GetName ()
+   {
+      return name;
+   }
+   bool SetArtist (string inputted_artist);
+   string GetArtist ()
+   {
+      return artist;
+   }
+   bool SetBitRate (int inputted_bit_rate);
+   int GetBitRate ()
+   {
+      return bitrate;
+   }
+   bool SetTotalTime (int inputted_total_time);
+   int GetTotalTime ()
+   {
+      return totalTime;
+   }
+   string toString ();
+   void display ();
+};
+
+const int iTunes::MIN_BITRATE = 64;
+const int iTunes::MAX_BITRATE = 705;
+const int iTunes::MIN_STR_LENGTH = 1;
+const int iTunes::MAX_STR_LENGTH = 80;
+const int iTunes::MIN_PLAY_TIME = 1000;
+const int iTunes::MAX_PLAY_TIME = 1000*60*60;
+const int iTunes::DEFAULT_BITRATE = 64;
+const int iTunes::DEFAULT_PLAY_TIME = 1000;
+const string iTunes::DEFAULT_STRING = " (undefined) ";
+
+int main()
+{
+   int error_test_for_totalTime;
+   string error_test_for_name;
+   iTunes music1, music2;
+   iTunes music3 ("A Moment Like This", "Kelly Clarkson", 200, 229000); 
+   iTunes music4 ("The Man Who Can't Be Moved", "The Script", 20, 249000);
+   
+   music1.display();
+   music2.display();
+   music3.display();
+   music4.display();
+   music1.SetName("Welcome To My Life");
+   music1.SetArtist("Simple Plan");
+   music1.SetBitRate(128);
+   music1.SetTotalTime(180000);
+   cout << endl;
+   music1.display();
+   music2.display();
+   music3.display();
+   music4.display();
+   error_test_for_name = "";
+   cout << endl << "If the name of music1 is mutated to " 
+      << error_test_for_name << endl;
+   if ( !music1.SetName(error_test_for_name))
+      cout << "Error in music name: Invalid length." << endl << endl;
+   else
+      cout << "Correct music name." << endl << endl;
+   error_test_for_totalTime = 500;
+   cout << "If the total time of music3 is mutated to " 
+      << error_test_for_totalTime << endl;
+   if ( !music3.SetTotalTime(error_test_for_totalTime))
+      cout << "Error in music total time: Invalid length." << endl << endl;
+   else
+      cout << "Correct total time" << endl << endl;
+   cout << "The bit rate of music 2 is " << music2.GetBitRate() << " kb/s" 
+      << endl;
+   cout << "The artist of music 4 is " << music4.GetArtist() << endl;
+
+   return 0;
+}
+
+iTunes::iTunes ()
+{
+   SetName(DEFAULT_STRING);
+   SetArtist(DEFAULT_STRING);
+   SetBitRate(DEFAULT_BITRATE);
+   SetTotalTime (DEFAULT_PLAY_TIME);
+}
+
+iTunes::iTunes (string initial_name, string initial_artist,
+   int initial_bit_rate, int initial_total_time)
+{
+   if (!SetName(initial_name))
+      SetName(DEFAULT_STRING);
+   if (!SetArtist(initial_artist))
+      SetArtist(DEFAULT_STRING);
+   if (!SetBitRate(initial_bit_rate))
+      SetBitRate(DEFAULT_BITRATE);
+   if (!SetTotalTime(initial_total_time))
+      SetTotalTime(DEFAULT_PLAY_TIME);
+}
+
+bool iTunes::SetName (string inputted_name)
+{
+   if ((inputted_name.length() >= MIN_STR_LENGTH) && 
+      (inputted_name.length() <= MAX_STR_LENGTH))
+   {
+      name = inputted_name;
+      return true;
+   }
+   return false;
+}
+
+bool iTunes::SetArtist (string inputted_artist)
+{
+   if ((inputted_artist.length() >= MIN_STR_LENGTH) && 
+      (inputted_artist.length() <= MAX_STR_LENGTH))
+   {
+      artist = inputted_artist;
+      return true;
+   }
+   return false;
+}
+
+bool iTunes::SetBitRate (int inputted_bit_rate)
+{
+   if ((inputted_bit_rate >= MIN_BITRATE) && 
+      (inputted_bit_rate <= MAX_BITRATE))
+   {
+      bitrate = inputted_bit_rate;
+      return true;
+   }
+   return false;
+}
+
+bool iTunes::SetTotalTime (int inputted_total_time)
+{
+   if ((inputted_total_time >= MIN_PLAY_TIME) && 
+      (inputted_total_time <= MAX_PLAY_TIME))
+   {
+      totalTime = inputted_total_time;
+      return true;
+   }
+   return false;
+}
+
+string iTunes::toString ()
+ {
+    string result_string, coverted_BitRate, converted_TotalTime;
+    ostringstream strBitRate;
+    strBitRate << bitrate;
+    coverted_BitRate = strBitRate.str();
+    ostringstream strTotalTime;
+    strTotalTime << totalTime;
+    converted_TotalTime = strTotalTime.str();
+    result_string = "Title : " + name + "/ Artist : " + artist 
+       + "/ Bit Rate : " + coverted_BitRate + "kb/s / Total Time : " 
+       + converted_TotalTime + " milisecond";
+    return result_string;
+ }
+
+ void iTunes::display ()
+{
+   cout << toString() << endl;
+}
+
+/* ------------- Pasted run -------------- 
+
+Title :  (undefined) / Artist :  (undefined) / Bit Rate : 64kb/s / Total Time :
+1000 milisecond
+Title :  (undefined) / Artist :  (undefined) / Bit Rate : 64kb/s / Total Time :
+1000 milisecond
+Title : A Moment Like This/ Artist : Kelly Clarkson/ Bit Rate : 200kb/s / Total
+Time : 229000 milisecond
+Title : The Man Who Can't Be Moved/ Artist : The Script/ Bit Rate : 64kb/s / Tot
+al Time : 249000 milisecond
+
+Title : Welcome To My Life/ Artist : Simple Plan/ Bit Rate : 128kb/s / Total Tim
+e : 180000 milisecond
+Title :  (undefined) / Artist :  (undefined) / Bit Rate : 64kb/s / Total Time :
+1000 milisecond
+Title : A Moment Like This/ Artist : Kelly Clarkson/ Bit Rate : 200kb/s / Total
+Time : 229000 milisecond
+Title : The Man Who Can't Be Moved/ Artist : The Script/ Bit Rate : 64kb/s / Tot
+al Time : 249000 milisecond
+
+If the name of music1 is mutated to
+Error in music name: Invalid length.
+
+If the total time of music3 is mutated to 500
+Error in music total time: Invalid length.
+
+The bit rate of music 2 is 64 kb/s
+The artist of music 4 is The Script
+Press any key to continue . . .
+------------------------------------------ */
+
