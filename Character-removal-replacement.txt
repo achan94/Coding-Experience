@@ -1,0 +1,149 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+char getKeyCharacter();
+string getString();
+string maskCharacter(string theString, char keyCharacter);
+string removeCharacter(string theString, char keyCharacter);
+int countKey(string theString, char keyCharacter);
+
+int main()
+{
+   string user_string, edited_input,removed_string;
+   char keyCharacter;
+   int number_of_keyCharacter;
+   keyCharacter = getKeyCharacter();
+   user_string = getString();
+   edited_input = maskCharacter (user_string, keyCharacter);
+   cout << endl << "The resulted string if the key character '" << keyCharacter
+      << "' is replaced with a dash is " << edited_input << endl << endl;
+   removed_string = removeCharacter(user_string, keyCharacter);
+   cout << "The resulted string if the key character '" << keyCharacter 
+      << "' in the string is removed is " << removed_string << endl << endl;
+   number_of_keyCharacter = countKey(user_string, keyCharacter);
+   cout << "Number of key character in the string is " 
+      << number_of_keyCharacter << endl;
+
+   return 0;
+}
+
+char getKeyCharacter()
+{
+   string user_input;
+   char keyCharacter;
+   bool check_the_length;
+   const int LENGTH_OF_KEYCHARACTER = 1;
+
+   check_the_length = false;
+
+   while (check_the_length == false)
+   {
+      cout << "Please enter key character (single character) : ";
+      getline (cin, user_input);
+      if (user_input.length() == LENGTH_OF_KEYCHARACTER)
+      {
+         keyCharacter = user_input[0];
+         check_the_length = true;
+      }
+   }
+   return keyCharacter;
+}
+
+string getString()
+{
+   string user_string;
+   bool check_the_length;
+   const int MIN_LENGTH_OF_STRING = 4;
+
+   check_the_length = false;
+
+   while (check_the_length == false)
+   {
+      cout << "Please enter string character (at least 4 character) : ";
+      getline (cin, user_string);
+      if (user_string.length() >= MIN_LENGTH_OF_STRING)
+      {
+         break;
+      }
+   }
+   return user_string;
+}
+
+string maskCharacter(string theString, char keyCharacter)
+{
+   int x;
+   string string_after_being_masked;
+   string_after_being_masked = "";
+   for (x = 0; x <= theString.length() - 1; x = x + 1)
+   {
+      if ( theString[x] == keyCharacter)
+         string_after_being_masked = string_after_being_masked + '-';
+      else
+         string_after_being_masked = string_after_being_masked + theString[x];
+   }
+   return string_after_being_masked;
+}
+
+string removeCharacter(string theString, char keyCharacter)
+{
+   int x;
+   string edited_string;
+   edited_string = "";
+   for (x = 0; x <= theString.length() - 1; x = x + 1)
+   {
+      if (theString[x] != keyCharacter)
+         edited_string = edited_string + theString[x];
+   }
+   return edited_string;
+}
+
+int countKey (string theString, char keyCharacter)
+{
+   int number_of_keyCharacter, x, length_of_string;
+   number_of_keyCharacter = 0;
+   length_of_string = theString.length();
+   for (x = 0; x <= length_of_string - 1; x = x + 1)
+   {
+      if(theString[x] == keyCharacter)
+      {
+         number_of_keyCharacter = number_of_keyCharacter + 1;
+      }
+   }
+   return number_of_keyCharacter;
+}
+
+/* ------------- Pasted run (1) -------------- 
+
+Please enter key character (single character) : e
+Please enter string character (at least 4 character) : The greatest barrier to s
+uccess is the fear of failure
+
+The resulted string if the key character 'e' is replaced with a dash is Th- gr-a
+t-st barri-r to succ-ss is th- f-ar of failur-
+
+The resulted string if the key character 'e' in the string is removed is Th grat
+st barrir to succss is th far of failur
+
+Number of key character in the string is 8
+Press any key to continue . . .
+
+------------------------------------------ */
+
+/* ------------- Pasted run (2) -------------- 
+
+Please enter key character (single character) : k
+Please enter string character (at least 4 character) : Luke Luck likes lakes
+
+The resulted string if the key character 'k' is replaced with a dash is Lu-e Luc
+- li-es la-es
+
+The resulted string if the key character 'k' in the string is removed is Lue Luc
+ lies laes
+
+Number of key character in the string is 4
+Press any key to continue . . .
+
+------------------------------------------ */
+
+
