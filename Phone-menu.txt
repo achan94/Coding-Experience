@@ -1,0 +1,256 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+using namespace std;
+
+int main()
+{
+   string user_input, strUsed_data, strRequested_data;
+   double data, cost;
+   int used_data, requested_data;
+   char firstLetter;
+   bool validated;
+   const double INITIAL_COST = 20;
+   const double INITIAL_DATA = 2048;
+   const int MIN_DATA = 1;
+   const int MAX_DATA_TO_ADD = 5;
+   const int MAX_DATA_TO_USE_OR_AUTO_PURCHASE_DATA = 1024;
+   const int AUTO_PURCHASE_COST = 15;
+   const int PLANNED_PURCHASE_COST = 10;
+
+
+   data = INITIAL_DATA;
+   cost = INITIAL_COST;
+   validated = true;
+
+   cout << "Initial Account Settings:" << endl
+      << "Unused data: " << data << " MB" << endl
+      << "Cost (so far) this month: $" << cost << endl << endl;
+
+    while (validated == true)
+   {
+      cout << "Menu: " <<endl 
+         << "B (show Bill and start new month)" << endl
+         << "U (show data Usage for current month)" << endl
+         << "D (consume Data now -- browse web, watch video, etc.)" << endl
+         << "A (buy Additional gigabytes for current month)" << endl
+         << "Q (show final bill and Quit)" << endl;
+      cout << "Enter a string or character: "; 
+      getline(cin, user_input);
+      firstLetter = user_input[0];
+      if ((firstLetter == 'd') || (firstLetter == 'D'))
+      {
+         cout << "Amount of data you have used: ";
+         getline (cin, strUsed_data);
+         istringstream (strUsed_data) >> used_data;
+         if ((used_data < MIN_DATA) || (used_data > MAX_DATA_TO_USE_OR_AUTO_PURCHASE_DATA))
+            cout << "The amount you can enter is between 1 and 1024." << endl << endl;
+         else
+         {
+            data = data - used_data;
+            if (data < 0)
+            {
+               data = data + MAX_DATA_TO_USE_OR_AUTO_PURCHASE_DATA;
+               cost = cost + AUTO_PURCHASE_COST;
+               cout << "Your account has been charged $15/GB because of over "
+               "capacity" << endl;
+            }
+            cout << "Available data: " << data << " MB" << endl << endl;
+         }  
+      }
+      else if ((firstLetter == 'a') || (firstLetter == 'A'))
+      {
+         cout << "Enter number of data you want to add (1 to 5 GB): ";
+         getline (cin, strRequested_data);
+         istringstream (strRequested_data) >> requested_data;
+         if ((requested_data >= MIN_DATA) && 
+            (requested_data <= MAX_DATA_TO_ADD))
+         {
+            data = data + requested_data*1000;
+            cost = cost + PLANNED_PURCHASE_COST * requested_data;
+         }
+         else
+         {
+            cout << endl << "The number of data you can add is 1 GB, 2 GB,"
+               "3 GB, 4 GB, or 5 GB." << endl << endl ;
+            continue;
+         }
+         cout << "Available data: " << data << " MB" << endl << endl;
+      }
+      else if ((firstLetter == 'b') || (firstLetter == 'B'))
+      {
+         cout << endl << "The amount you owe is $" << cost << endl;
+         cout << "Unused capacity : " << data << " MB" << endl << endl;
+         data =  INITIAL_DATA;
+         cost = INITIAL_COST;
+         cout << "You start a new month." << endl << "Data : " << data << " MB"
+            << endl << endl;
+      }
+      else if ((firstLetter == 'u') || (firstLetter == 'U'))
+      {
+         cout << endl << "Unused capacity you have for this month is " << data 
+            << " MB" << endl << endl;
+      }
+      else if ((firstLetter == 'q') || (firstLetter == 'Q'))
+      {
+         validated = false;
+          cout << endl << "Your final bill is $" << cost << endl << endl;
+      }
+      else
+      {
+         cout << endl << "Error input. Try again" << endl << endl;
+         continue;
+      }
+   }
+
+  return 0;
+}
+
+/* ------------- Pasted run -------------- 
+
+Initial Account Settings:
+Unused data: 2048 MB
+Cost (so far) this month: $20
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: D
+Amount of data you have used: 1024
+Available data: 1024 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: B
+
+The amount you owe is $20
+Unused capacity : 1024 MB
+
+You start a new month.
+Data : 2048 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: add
+Enter number of data you want to add (1 to 5 GB): 1
+Available data: 3048 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: U
+
+Unused capacity you have for this month is 3048 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: Y
+
+Error input. Try again
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: A
+Enter number of data you want to add (1 to 5 GB): 8
+
+The number of data you can add is 1 GB, 2 GB,3 GB, 4 GB, or 5 GB.
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: D
+Amount of data you have used: 1024
+Available data: 2024 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: data
+Amount of data you have used: 1024
+Available data: 1000 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: data
+Amount of data you have used: 1024
+Your account has been charged $15/GB because of over capacity
+Available data: 1000 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: bill
+
+The amount you owe is $45
+Unused capacity : 1000 MB
+
+You start a new month.
+Data : 2048 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: unused data
+
+Unused capacity you have for this month is 2048 MB
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: data
+Amount of data you have used: 1050
+The amount you can enter is between 1 and 1024.
+
+Menu:
+B (show Bill and start new month)
+U (show data Usage for current month)
+D (consume Data now -- browse web, watch video, etc.)
+A (buy Additional gigabytes for current month)
+Q (show final bill and Quit)
+Enter a string or character: quit
+
+Your final bill is $20
+
+Press any key to continue . . .
+------------------------------------------ */
